@@ -1,115 +1,96 @@
-import { login } from '@/routes';
-import { store } from '@/routes/register';
-import { Form, Head } from '@inertiajs/react';
-
-import InputError from '@/components/input-error';
-import TextLink from '@/components/text-link';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
-import AuthLayout from '@/layouts/auth-layout';
+import { Head, Link, useForm } from "@inertiajs/react";
+import AppLayout from "@/layouts/app-layout";
+import { route } from "ziggy-js";
 
 export default function Register() {
-    return (
-        <AuthLayout
-            title="Create an account"
-            description="Enter your details below to create your account"
-        >
-            <Head title="Register" />
-            <Form
-                {...store.form()}
-                resetOnSuccess={['password', 'password_confirmation']}
-                disableWhileProcessing
-                className="flex flex-col gap-6"
+  const { data, setData, post, processing, errors } = useForm({
+    name: "",
+    email: "",
+    password: "",
+    password_confirmation: "",
+  });
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    post(route("register"));
+  };
+
+  return (
+    <AppLayout>
+      <Head title="Daftar" />
+      <section className="min-h-[80vh] flex items-center justify-center bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 px-6">
+        <div className="bg-neutral-900 border border-neutral-700 rounded-2xl shadow-xl w-full max-w-md p-8">
+          <h1 className="text-3xl font-bold text-orange-500 mb-2 text-center">Daftar</h1>
+          <p className="text-gray-400 text-center mb-8">Buat akun baru dan nikmati fitur SpareLink</p>
+
+          <form onSubmit={submit} className="space-y-5">
+            <div>
+              <label className="block text-sm text-gray-300 mb-1">Nama</label>
+              <input
+                value={data.name}
+                onChange={(e) => setData("name", e.target.value)}
+                className="w-full px-4 py-2 bg-neutral-800 text-white border border-neutral-700 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"
+                placeholder="Nama lengkap"
+                required
+              />
+              {errors.name && <div className="text-red-500 text-sm mt-1">{errors.name}</div>}
+            </div>
+
+            <div>
+              <label className="block text-sm text-gray-300 mb-1">Email</label>
+              <input
+                type="email"
+                value={data.email}
+                onChange={(e) => setData("email", e.target.value)}
+                className="w-full px-4 py-2 bg-neutral-800 text-white border border-neutral-700 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"
+                placeholder="email@domain.com"
+                required
+              />
+              {errors.email && <div className="text-red-500 text-sm mt-1">{errors.email}</div>}
+            </div>
+
+            <div>
+              <label className="block text-sm text-gray-300 mb-1">Password</label>
+              <input
+                type="password"
+                value={data.password}
+                onChange={(e) => setData("password", e.target.value)}
+                className="w-full px-4 py-2 bg-neutral-800 text-white border border-neutral-700 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"
+                placeholder="••••••••"
+                required
+              />
+              {errors.password && <div className="text-red-500 text-sm mt-1">{errors.password}</div>}
+            </div>
+
+            <div>
+              <label className="block text-sm text-gray-300 mb-1">Konfirmasi Password</label>
+              <input
+                type="password"
+                value={data.password_confirmation}
+                onChange={(e) => setData("password_confirmation", e.target.value)}
+                className="w-full px-4 py-2 bg-neutral-800 text-white border border-neutral-700 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={processing}
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 rounded-lg transition"
             >
-                {({ processing, errors }) => (
-                    <>
-                        <div className="grid gap-6">
-                            <div className="grid gap-2">
-                                <Label htmlFor="name">Name</Label>
-                                <Input
-                                    id="name"
-                                    type="text"
-                                    required
-                                    autoFocus
-                                    tabIndex={1}
-                                    autoComplete="name"
-                                    name="name"
-                                    placeholder="Full name"
-                                />
-                                <InputError
-                                    message={errors.name}
-                                    className="mt-2"
-                                />
-                            </div>
+              {processing ? "Memproses..." : "Daftar"}
+            </button>
+          </form>
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    required
-                                    tabIndex={2}
-                                    autoComplete="email"
-                                    name="email"
-                                    placeholder="email@example.com"
-                                />
-                                <InputError message={errors.email} />
-                            </div>
-
-                            <div className="grid gap-2">
-                                <Label htmlFor="password">Password</Label>
-                                <Input
-                                    id="password"
-                                    type="password"
-                                    required
-                                    tabIndex={3}
-                                    autoComplete="new-password"
-                                    name="password"
-                                    placeholder="Password"
-                                />
-                                <InputError message={errors.password} />
-                            </div>
-
-                            <div className="grid gap-2">
-                                <Label htmlFor="password_confirmation">
-                                    Confirm password
-                                </Label>
-                                <Input
-                                    id="password_confirmation"
-                                    type="password"
-                                    required
-                                    tabIndex={4}
-                                    autoComplete="new-password"
-                                    name="password_confirmation"
-                                    placeholder="Confirm password"
-                                />
-                                <InputError
-                                    message={errors.password_confirmation}
-                                />
-                            </div>
-
-                            <Button
-                                type="submit"
-                                className="mt-2 w-full"
-                                tabIndex={5}
-                                data-test="register-user-button"
-                            >
-                                {processing && <Spinner />}
-                                Create account
-                            </Button>
-                        </div>
-
-                        <div className="text-center text-sm text-muted-foreground">
-                            Already have an account?{' '}
-                            <TextLink href={login()} tabIndex={6}>
-                                Log in
-                            </TextLink>
-                        </div>
-                    </>
-                )}
-            </Form>
-        </AuthLayout>
-    );
+          <p className="text-gray-400 text-sm mt-6 text-center">
+            Sudah punya akun?{" "}
+            <Link href={route("login")} className="text-orange-500 hover:text-orange-400 font-medium">
+              Masuk
+            </Link>
+          </p>
+        </div>
+      </section>
+    </AppLayout>
+  );
 }
