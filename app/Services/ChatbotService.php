@@ -31,18 +31,10 @@ class ChatbotService
     {
         $context = $this->retrieveContextFromFiles($question);
 
-        $orderGuide = '';
-        foreach (['cara pesan','cara order','cara membeli','checkout','pembayaran','pengiriman','booking','servis','service'] as $kw) {
-            if (stripos($question, $kw) !== false) {
-                $orderGuide = "\n\n".$this->readContextFile('order_guide.txt', '');
-                break;
-            }
-        }
-
         $prompt =
             "Anda adalah SpareAsk, chatbot ramah untuk situs bengkel & katalog sparepart motor.\n".
             "Jawab ringkas, akurat, dan berbasis data. Jika data tidak ada, katakan jujur.\n\n".
-            "Konteks:\n{$context}{$orderGuide}\n".
+            "Konteks:\n{$context}\n".
             "Pertanyaan pengguna: {$question}\n\n".
             "Berikan jawaban jelas (boleh bullet), dan rekomendasikan sparepart/bengkel yang paling cocok jika relevan.";
 
