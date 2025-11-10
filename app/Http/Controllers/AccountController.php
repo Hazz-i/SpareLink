@@ -3,10 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 class AccountController extends Controller
 {
@@ -15,12 +14,16 @@ class AccountController extends Controller
         $user = $request->user();
 
         $validated = $request->validate([
-            'name'  => ['required','string','max:255'],
-            'email' => ['required','email','max:255', Rule::unique('users')->ignore($user->id)],
+            'name'     => ['required', 'string', 'max:255'],
+            'email'    => [
+                'required', 'email', 'max:255',
+                Rule::unique('users', 'email')->ignore($user->id),
+            ],
+            // password opsional; kalau diisi minimal 8
             'password' => ['nullable', Password::min(8)],
         ]);
 
-        $user->name = $validated['name'];
+        $user->name  = $validated['name'];
         $user->email = $validated['email'];
 
         if (!empty($validated['password'])) {
@@ -28,7 +31,9 @@ class AccountController extends Controller
         }
 
         $user->save();
-
-        return back()->with('success', 'Pengaturan akun berhasil disimpan.');
+        return back()->with('flash', [
+            'type' => 'success',
+            'message' => 'Pengaturan akun disimpan.',
+        ]);
     }
 }

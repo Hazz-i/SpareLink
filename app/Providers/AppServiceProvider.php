@@ -15,9 +15,12 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // Bagikan data user ke semua halaman Inertia (dalam closure supaya aman di CLI)
-        Inertia::share('auth', fn () => [
-            'user' => Auth::user(),
+        Inertia::share([
+            'auth' => fn () => [
+                'user' => Auth::user(),
+            ],
+
+            'flash' => fn () => session('flash'),
         ]);
     }
 }
